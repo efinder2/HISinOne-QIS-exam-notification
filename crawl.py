@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import hashlib
 import sys
 import urllib.parse as urlparse
-from pathlib import Path
 from urllib.parse import parse_qs
-import lxml.html as lh
+
 import requests
 from bs4 import BeautifulSoup
 
-icms_username = '***-***-u1'
-icms_password = '****'
+import notenliste
+
+icms_username = '********'
+icms_password = '********'
+icms_server_part = 'https://horstl.hs-fulda.de'
+icms_qispos_server_part = 'https://qispos.hs-fulda.de'
 telegram_bot_token = '****'
 telegram_chatID = '****'
 
@@ -33,23 +35,27 @@ session_requests = requests.session()
 session_requests.headers.update({
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'})
 
-login_url = "https://icms.hs-hannover.de/qisserver/rds?state=user&type=0"
+login_url = icms_server_part + "/qisserver/rds?state=user&type=0"
 print("Rufe Startseite auf")
 result = session_requests.get(login_url)
 
 # login...
 print("Einloggen...")
-url_loginPost = "https://icms.hs-hannover.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm"
+url_loginPost = icms_server_part + "/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm"
 result = session_requests.post(
     url_loginPost,
     data=payload
 )
 
+resultContainingAsi = session_requests.get(
+    icms_server_part + "/qisserver/rds?state=redirect&sso=qisstu&myre=state%253Duser%2526type%253D0%2526htmlBodyOnly%253Dtrue%2526topitem%253Dfunctions%2526language%253Dde")
+
 # Extract SessionID
 asi = None
 
-soup = BeautifulSoup(str(result.content), 'html.parser')
+soup = BeautifulSoup(str(resultContainingAsi.content), 'html.parser')
 for link in soup.find_all('a'):
+    # print(link)
     parsed = urlparse.urlparse(link.get('href'))
     params = parse_qs(parsed.query)
     if "asi" in params:
@@ -59,71 +65,23 @@ if asi is None:
     print("SessionID couldn't be extracted")
     sys.exit()
 
-print("Rufe Notenuebersicht Seite auf...")
+print("asi: " + asi)
+
+print("Rufe Notenspiegel Auswahl Seite auf...")
 result = session_requests.get(
-    "https://icms.hs-hannover.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D84%2Cstgnr%3D1&expand=0&asi=" + asi,
-    headers=dict(referer="https://icms.hs-hannover.de/qisserver/rds?state=sitemap&topitem=leer&breadCrumbSource=portal")
-)
+    icms_qispos_server_part + "/qisserver/rds?state=notenspiegelStudent&next=tree.vm&nextdir=qispos/notenspiegel/student&navigationPosition=functions%2CnotenspiegelStudent&breadcrumb=notenspiegel&topitem=functions&subitem=notenspiegelStudent&asi=" + asi)
 
-doc = lh.fromstring(str(result.content))
-table_elements = doc.xpath('//table')
-notenuebersicht_table = table_elements[1]
+soup = BeautifulSoup(str(result.content), 'html.parser')
+for link in soup.find_all('a'):
+    # print(link)
+    parsed = urlparse.urlparse(link.get('href'))
+    params = parse_qs(parsed.query)
+    if "struct" in params and params.get("struct")[0] == "auswahlBaum":
+        print("Rufe Notenuebersicht Seite auf...")
+        result = session_requests.get(
+            link.get('href'),
+            headers=dict(referer=icms_server_part + "/qisserver/rds?state=sitemap&topitem=leer&breadCrumbSource=portal")
+        )
 
-noten = {}
-
-for tr in notenuebersicht_table:
-    i = 0
-    pruefungsnr = 0
-    pruefungstext = 0
-    art = 0
-    note = 0
-    status = 0
-    credits = 0
-    semester = 0
-    for td in tr:
-        text = str(td.text.replace("\\t", "").replace("\\r", "").replace("\\n", "").strip())
-
-        i = i + 1
-        if i == 1:
-            pruefungsnr = text
-        if i == 2:
-            pruefungstext = text
-        if i == 3:
-            art = text
-        if i == 4:
-            note = text
-        if i == 5:
-            status = text
-        if i == 7:
-            credits = text
-        if i == 9:
-            semester = text
-
-    if art != "PL":
-        continue
-
-    if semester not in noten:
-        noten[semester] = dict()
-    noten[semester][pruefungsnr] = {
-        'pruefungstext': pruefungstext,
-        'note': note,
-        'status': status,
-        'credits': int(credits)
-    }
-
-for semester in noten:
-    for pruefungsnr in noten[semester]:
-        toHash = semester + pruefungsnr + noten[semester][pruefungsnr]["status"]
-        hash = hashlib.md5(toHash.encode("UTF-8")).hexdigest()
-
-        knownHashes = Path('examcheck.txt').read_text()
-        f = open('examcheck.txt', 'a+')
-        if hash not in knownHashes:
-            f.write(hash + "\n")
-
-            message = "Neuer Pruefungsstatus " \
-                      "\nModul: " + noten[semester][pruefungsnr]["pruefungstext"] + \
-                      "\nStatus: " + noten[semester][pruefungsnr]["status"] + \
-                      "\nNote: " + noten[semester][pruefungsnr]["note"]
-            telegram_bot_sendtext(message)
-        f.close()
+        [noten, studiengang] = notenliste.parseFromHTML(str(result.content))
+        print(noten)

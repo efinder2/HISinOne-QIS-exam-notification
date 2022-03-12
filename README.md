@@ -1,23 +1,20 @@
 # HISinOne QIS -> Benachrichtigungen über bewertete Prüfungsleistungen
 
+Basiert auf dem Repository: [https://github.com/MrKrisKrisu/HISinOne-QIS-exam-notification](https://github.com/MrKrisKrisu/HISinOne-QIS-exam-notification)
+
 ## Was ist das?
-Ein Python Script, das sich für dich in iCMS einloggt und schaut, ob sich Änderungen (zum Beispiel eine neue eingetragene Note) in der Prüfungsübersicht bei dir ergeben haben. Das Script benachrichtigt dich dann direkt per Telegram. Es ist also dafür gedacht, beispielsweise alle 10 Minuten ausgeführt zu werden.
+Ein Python Script, das sich für dich in iCMS einloggt und schaut, ob sich Änderungen (zum Beispiel eine neue eingetragene Note) in der Prüfungsübersicht bei dir ergeben haben.
+
+Falls gewünscht benachrichtigt dich das Script dann direkt per Telegram.
+
+Optional können alle Noten als JSON Datenstruktur oder nur die Änderungen als Text auf der Konsole ausgegeben werden.
+
+Es ist also dafür gedacht, beispielsweise alle 30 Minuten ausgeführt zu werden.
  
 > Tut dem Hochschulserver einen Gefallen und fragt **nicht** alle 10 Sekunden ab!
  
 ## Kompatible Hochschulen
-Die QIS-Software aus dem Paket HISinOne wird bei vielen Hochschulen in Deutschland eingesetzt. Sofern keine individuellen Programmierungen vorhanden sind, sollte dieses Script bei diesen dann auch funktionieren.
-
-Bislang sind folgende kompatible Hochschulen bekannt:
-* Hochschule Hannover
-* TU Braunschweig
-* Leibniz Universität Hannover
-* Hochschule Bremerhaven
-* Hochschule Bremen (unsicher, hat teilweise geklappt)
-* Westfälische Hochschule Gelsenkirchen
-* Hochschule Koblenz
-* FernUniversität in Hagen
-* Hochschule Karlsruhe Technik und Wirtschaft
+Dieses Script wurde auf die HISinOne Instanz der Hochschule Fulda (horstl) angepasst und wird vermutlich für keine andere Hochschule funktionieren.
 
 ## Installationsanleitung
 ### Telegram einrichten
@@ -32,8 +29,7 @@ Mehr Informationen zum erstellen von Telegram Bots: [https://core.telegram.org/b
 
 ### Python Umgebung
 Die Module requests und lxml sind standardmäßig nicht installiert. Diese können mit pip nachinstalliert werden:
-> pip install requests
-> pip install lxml
+> pip install -r requirements.txt
 
 ### Script installieren
 Lade das Script in deine Python Umgebung und passe in den oberen Zeilen die Werte für den Telegram Token und die Telegram ChatID an. Außerdem musst du deine iCMS Zugangsdaten eingeben.
@@ -42,10 +38,10 @@ Wenn du das Script jetzt ausführst solltest du einmalig über **alle** eingetra
 ### Automatisches ausführen
 Du kannst dein Script automatisch regelmäßig ausführen lassen (dafür ist es ja auch gedacht). Das kannst du mit einem CronJob realisieren. Erstelle einfach folgenden CronJob:
 
-> */15 * * * * /path/to/script.py
+> */30 * * * * /path/to/script.py
 
-Dies führt dein Script automatisch alle 15 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken kann man die Ausführung auf die Prüfungsrelevanten Monate begrenzen:
-> */15 * * 1,2,6,7 * /path/to/script.py
+Dies führt dein Script automatisch alle 30 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken kann man die Ausführung auf die Prüfungsrelevanten Monate begrenzen:
+> */30 * * 1,2,6,7 * /path/to/script.py
 
 ## Sicherheitshinweis
 Du musst dein zentrales Passwort für deinen Hochschulaccount in **Klartext** in dieses Script speichern. Achte daher bitte darauf, dass es nur in einer gesicherten Umgebung läuft und durch geeignete Berechtigungen von dem Zugriff Dritter geschützt ist.
