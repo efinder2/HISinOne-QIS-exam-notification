@@ -1,59 +1,41 @@
+import json
 import smtplib
 import ssl
-from enum import Enum
+from enum import IntEnum
 
 import requests
 
+from configuration import Configuration
 
-class ConsoleOutputMode(Enum):
+
+class ConsoleOutputMode(IntEnum):
     NONE = 0
     PRETTY_CHANGES = 1
     JSON_ALL = 2
 
 
 class Notifier:
-    mailSSLPort = 465
-    mailSmtpHost = ''
-    mailLoginUser = ''
-    mailLoginPassword = ''
-    mailSenderMail = ''
-    mailReceiverMail = ''
+    config = None
 
-    telegramBotToken = ''
-    telegramChatId = ''
-
-    consoleOutputMode = ConsoleOutputMode.NONE
-
-    def enableMailNotifications(self, port, smtpHost, user, password, senderMail, receiverMail):
-        self.mailSSLPort = port
-        self.mailSmtpHost = smtpHost
-        self.mailLoginUser = user
-        self.mailLoginPassword = password
-        self.mailSenderMail = senderMail
-        self.mailReceiverMail = receiverMail
-
-    def enableTelegramNotifications(self, botToken, chatId):
-        self.telegramBotToken = botToken
-        self.telegramChatId = chatId
-
-    def setConsoleOutputMode(self, mode: ConsoleOutputMode):
-        self.consoleOutputMode = mode
+    def __init__(self, config: Configuration):
+        self.config = config
 
     def notify(self, message, subject, noten):
-        if self.consoleOutputMode == ConsoleOutputMode.JSON_ALL:
-            print(noten)
-        elif self.consoleOutputMode == ConsoleOutputMode.PRETTY_CHANGES:
+        if int(self.config.getDefault('consoleOutputMode')) == int(ConsoleOutputMode.JSON_ALL):
+            print(json.dumps(noten))
+        elif int(self.config.getDefault('consoleOutputMode')) == int(ConsoleOutputMode.PRETTY_CHANGES):
             print(subject)
             print(message)
 
-        if self.mailSmtpHost != '':
+        if self.config.getDefault('mailSmtpHost') != '':
             context = ssl.create_default_context()
 
-            with smtplib.SMTP_SSL(self.mailSmtpHost, self.mailSSLPort, context=context) as server:
-                server.login(self.mailLoginUser, self.mailLoginPassword)
-                server.sendmail(self.mailSenderMail, self.mailReceiverMail, "Subject: " + subject + "\n\n" + message)
+            with smtplib.SMTP_SSL(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort'), context=context) as server:
+                server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
+                server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
+                                "Subject: " + subject + "\n\n" + message)
 
-        if self.telegramChatId != '':
-            send_text = 'https://api.telegram.org/bot' + self.telegramBotToken + '/sendMessage?chat_id=' \
-                        + self.telegramChatId + '&parse_mode=Markdown&text=' + '**' + subject + '**' + message
+        if self.config.getDefault('telegramChatId') != '':
+            send_text = 'https://api.telegram.org/bot' + self.config.getDefault('telegramBotToken') + '/sendMessage?chat_id=' \
+                        + self.config.getDefault('telegramChatId') + '&parse_mode=Markdown&text=' + '**' + subject + '**' + message
             requests.get(send_text)
