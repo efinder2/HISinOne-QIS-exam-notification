@@ -74,6 +74,8 @@ def parseFromHTML(content):
 
 
 def processList(noten, studiengang, notifier: Notifier):
+    subject = "Neuer Pruefungsstatus fuer '" + studiengang + "'"
+    message = ''
     for pruefungsnr in noten:
         toHash = pruefungsnr + noten[pruefungsnr]["status"]
         hash = hashlib.md5(toHash.encode("UTF-8")).hexdigest()
@@ -88,12 +90,17 @@ def processList(noten, studiengang, notifier: Notifier):
         if hash not in knownHashes:
             f.write(hash + "\n")
 
-            message = "\nNeuer Pruefungsstatus für '" + studiengang + "'" + \
-                      "\nModul: " + noten[pruefungsnr]["pruefungstext"] + \
-                      "\nPruefungsnummer: " + pruefungsnr + \
-                      "\nStatus: " + noten[pruefungsnr]["status"] + \
-                      "\nNote: " + noten[pruefungsnr]["note"] + \
-                      "\nVersuch: " + noten[pruefungsnr]["versuch"] + \
-                      "\nDatum: " + noten[pruefungsnr]["datum"]
-            notifier.notify(message, noten)
+            message += "\n\n" + \
+                       "\nModul: " + noten[pruefungsnr]["pruefungstext"] + \
+                       "\nPruefungsnummer: " + pruefungsnr + \
+                       "\nStatus: " + noten[pruefungsnr]["status"] + \
+                       "\nNote: " + noten[pruefungsnr]["note"] + \
+                       "\nVersuch: " + noten[pruefungsnr]["versuch"] + \
+                       "\nDatum: " + noten[pruefungsnr]["datum"]
         f.close()
+
+    # remove non-ascii characters
+    message = message.encode('ascii', 'ignore').decode('ascii')
+    subject = subject.encode('ascii', 'ignore').decode('ascii')
+
+    notifier.notify(message, subject, noten)

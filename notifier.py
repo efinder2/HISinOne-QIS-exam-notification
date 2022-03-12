@@ -39,10 +39,11 @@ class Notifier:
     def setConsoleOutputMode(self, mode: ConsoleOutputMode):
         self.consoleOutputMode = mode
 
-    def notify(self, message, noten):
+    def notify(self, message, subject, noten):
         if self.consoleOutputMode == ConsoleOutputMode.JSON_ALL:
             print(noten)
         elif self.consoleOutputMode == ConsoleOutputMode.PRETTY_CHANGES:
+            print(subject)
             print(message)
 
         if self.mailSmtpHost != '':
@@ -50,9 +51,9 @@ class Notifier:
 
             with smtplib.SMTP_SSL(self.mailSmtpHost, self.mailSSLPort, context=context) as server:
                 server.login(self.mailLoginUser, self.mailLoginPassword)
-                server.sendmail(self.mailSenderMail, self.mailReceiverMail, message)
+                server.sendmail(self.mailSenderMail, self.mailReceiverMail, "Subject: " + subject + "\n\n" + message)
 
         if self.telegramChatId != '':
             send_text = 'https://api.telegram.org/bot' + self.telegramBotToken + '/sendMessage?chat_id=' \
-                        + self.telegramChatId + '&parse_mode=Markdown&text=' + message
+                        + self.telegramChatId + '&parse_mode=Markdown&text=' + '**' + subject + '**' + message
             requests.get(send_text)
