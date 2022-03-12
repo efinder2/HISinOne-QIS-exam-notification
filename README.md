@@ -1,4 +1,4 @@
-# HISinOne QIS -> Benachrichtigungen über bewertete Prüfungsleistungen
+# HISinOne QIS - Parser für Prüfungsleistungen
 
 Basiert auf dem Repository: [https://github.com/MrKrisKrisu/HISinOne-QIS-exam-notification](https://github.com/MrKrisKrisu/HISinOne-QIS-exam-notification)
 
@@ -14,7 +14,7 @@ Es ist also dafür gedacht, beispielsweise alle 30 Minuten ausgeführt zu werden
 > Tut dem Hochschulserver einen Gefallen und fragt **nicht** alle 10 Sekunden ab!
  
 ## Kompatible Hochschulen
-Dieses Script wurde auf die HISinOne Instanz der Hochschule Fulda (horstl) angepasst und wird vermutlich für keine andere Hochschule funktionieren.
+Dieses Script wurde auf die HISinOne Instanz der **Hochschule Fulda** (horstl) angepasst und wird vermutlich für keine andere Hochschule funktionieren.
 
 ## Installationsanleitung
 ### Telegram einrichten

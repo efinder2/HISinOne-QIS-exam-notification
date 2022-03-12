@@ -1,8 +1,11 @@
 import hashlib
 import os.path
+from pathlib import Path
 
 import lxml.html as lh
-from pathlib import Path
+
+from notifier import Notifier
+
 
 def parseFromHTML(content):
     doc = lh.fromstring(content)
@@ -29,8 +32,6 @@ def parseFromHTML(content):
     for tr in notenuebersicht_table:
         if "qis_kontoOnTop" in str(lh.tostring(tr)) or "tabelleheader" in str(lh.tostring(tr)):
             continue
-
-        #print("new tr", str(lh.tostring(tr)))
 
         i = 0
         pruefungsnr = 0
@@ -71,7 +72,8 @@ def parseFromHTML(content):
 
     return [noten, studiengang]
 
-def processList(noten, studiengang):
+
+def processList(noten, studiengang, notifier: Notifier):
     for pruefungsnr in noten:
         toHash = pruefungsnr + noten[pruefungsnr]["status"]
         hash = hashlib.md5(toHash.encode("UTF-8")).hexdigest()
@@ -86,12 +88,12 @@ def processList(noten, studiengang):
         if hash not in knownHashes:
             f.write(hash + "\n")
 
-            message = "Neuer Pruefungsstatus für '" + studiengang + "'" \
+            message = "\nNeuer Pruefungsstatus für '" + studiengang + "'" + \
                       "\nModul: " + noten[pruefungsnr]["pruefungstext"] + \
                       "\nPruefungsnummer: " + pruefungsnr + \
                       "\nStatus: " + noten[pruefungsnr]["status"] + \
                       "\nNote: " + noten[pruefungsnr]["note"] + \
                       "\nVersuch: " + noten[pruefungsnr]["versuch"] + \
                       "\nDatum: " + noten[pruefungsnr]["datum"]
-            # telegram_bot_sendtext(message)
+            notifier.notify(message, noten)
         f.close()
