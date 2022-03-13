@@ -35,11 +35,11 @@ Alternativ kann auch das gebaute Release für Linux verwendet werden
 
 ### Script installieren
 - Lade das Script in deine Python Umgebung (zum Ausführen der bereits gebauten Version nicht notwendig)
-- Lass dir mit `python3 crawl.py --config myHisConfig.cfg` oder `./crawl --config myHisConfig.cfg` eine Konfigurationsdatei erstellen (der Pfad zur Datei kann geändert werden, muss aber schreibbar sin)
+- Lass dir mit `python3 crawl.py --config myHisConfig.cfg` oder `./crawl --config myHisConfig.cfg` eine Konfigurationsdatei erstellen (der Pfad zur Datei kann geändert werden, muss aber schreibbar sein)
 - Die Konfigurationsdatei nun manuell anpassen
     - Nutzername und Passwort benötigt (iCMS Zugangsdaten)
     - gerne auch schon mit Telegram oder Mail Support (optional)
-- Wenn du das Script jetzt erneut ausführst solltest du einmalig über **alle** eingetragenen Prüfungen benachrichtigt werden.
+- Wenn du das Script jetzt erneut ausführst, solltest du einmalig über **alle** eingetragenen Prüfungen benachrichtigt werden.
 
 ### Automatisches ausführen
 Du kannst dein Script automatisch regelmäßig ausführen lassen (dafür ist es ja auch gedacht). Das kannst du mit einem CronJob realisieren. Erstelle einfach folgenden CronJob:
@@ -50,7 +50,7 @@ oder
 
 > */30 * * * * /path/to/crawl -c /path/to/myHisConfig.cfg
 
-Dies führt dein Script automatisch alle 30 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken kann man die Ausführung auf die prüfungsrelevanten Monate begrenzen:
+Dies führt dein Script automatisch alle 30 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken, kann man die Ausführung auf die prüfungsrelevanten Monate begrenzen:
 
 > */30 * * 1,2,6,7 * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
 
