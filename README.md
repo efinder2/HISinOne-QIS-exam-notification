@@ -5,7 +5,7 @@ Basiert auf dem Repository: [https://github.com/MrKrisKrisu/HISinOne-QIS-exam-no
 Dieses Script wurde auf die HISinOne Instanz der **Hochschule Fulda** (horstl) angepasst und wird vermutlich für keine andere Hochschule funktionieren.
 
 ## Was ist das?
-Ein Python Script, das sich für dich in iCMS einloggt und schaut, ob sich Änderungen (zum Beispiel eine neue eingetragene Note) in der Prüfungsübersicht bei dir ergeben haben.
+Ein Python Script, das sich für dich in iCMS (horstl) einloggt und schaut, ob sich Änderungen (zum Beispiel eine neue eingetragene Note) in der Prüfungsübersicht bei dir ergeben haben.
 
 Falls gewünscht benachrichtigt dich das Script dann direkt per Telegram oder E-Mail.
 
@@ -19,12 +19,13 @@ Es ist also dafür gedacht, beispielsweise alle 30 Minuten ausgeführt zu werden
 ### Telegram einrichten
 #### Telegram Bot erstellen
 Erstelle über den [BotFather](https://t.me/botfather) einen neuen Bot und schreibe dir den Token heraus.
-Mehr Informationen zum erstellen von Telegram Bots: [https://core.telegram.org/bots](https://core.telegram.org/bots)
+Mehr Informationen zum Erstellen von Telegram Bots: [https://core.telegram.org/bots](https://core.telegram.org/bots)
 
-#### Telegram Chat ID herausfinden
-* Erstelle eine neue Gruppe und füge deinen Bot hinzu, sowie den [TelegramRawBot](https://t.me/RawDataBot)
-* Schreibe nun eine Nachricht in die Gruppe, der RawBot wird dir antworten
-* Schreibe dir deine ID heraus, die unter **message -> from -> id** steht
+#### Eigene Telegram ID herausfinden
+* Erstelle eine neue Gruppe und füge den [TelegramRawBot](https://t.me/RawDataBot) (RawDataBot) als Mitglied hinzu
+* Schreibe nun eine Nachricht in die Gruppe, der RawDataBot wird dir antworten, falls er nicht schon eine Nachricht geschickt hat
+* Schreibe dir deine ID heraus, die in der Nachricht unter **message -> from -> id** steht (nicht die mit dem Minus!)
+* Deine ID muss später in der Script Konfigurationsdatei als `telegramChatId` hinzugefügt werden
 
 ### Python Umgebung
 Die Module requests und lxml sind standardmäßig nicht installiert. Diese können mit pip nachinstalliert werden:
@@ -59,3 +60,12 @@ oder
 
 ## Sicherheitshinweis
 Du musst dein zentrales Passwort für deinen Hochschulaccount im **Klartext** in der Konfigurationsdatei speichern. Achte daher bitte darauf, dass das Script nur in einer gesicherten Umgebung läuft und durch geeignete Berechtigungen von dem Zugriff Dritter geschützt ist.
+
+## Ausführbare Datei bauen
+Um eine größtmögliche Kompatibilität zu anderen Systemen (bzw. zu dessen glibc Version) herstellen zu können, empfiehlt es sich in einem Docker Container zu bauen.
+
+Bauen der ausführbaren Datei in einem Docker Container kann durch Aufruf von `linux_build_env/build.sh` angestoßen werden.
+Das Resultat liegt danach im Pfad `dist/crawl`.
+
+Optional kann die Installation der Abhängigkeiten und Bauen der ausführbaren Datei durch Aufruf von `linux_build_env/package.sh` angestoßen werden.
+Beachte, dass dabei die Abhängigkeiten direkt durch deinen Benutzer in deinem System installiert werden. Python muss bereits vorhanden sein
