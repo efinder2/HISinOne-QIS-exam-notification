@@ -19,6 +19,10 @@ if config.getDefault('icmsUsername') == '' or config.getDefault('icmsPassword') 
     print("Die Konfiguration von Benutzername und Passwort ist notwendig!")
     sys.exit(1)
 
+if config.getDefault('stateFile') == '':
+    print("Die Konfiguration des 'stateFile' ist notwendig!")
+    sys.exit(1)
+
 customNotifier = Notifier(config)
 
 payload = {
@@ -82,4 +86,4 @@ for link in soup.find_all('a'):
         )
 
         [noten, studiengang] = notenliste.parseFromHTML(str(result.content))
-        notenliste.processList(noten, studiengang, customNotifier)
+        notenliste.processList(noten, studiengang, customNotifier, config)

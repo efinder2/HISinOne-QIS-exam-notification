@@ -4,6 +4,7 @@ from pathlib import Path
 
 import lxml.html as lh
 
+from configuration import Configuration
 from notifier import Notifier
 
 
@@ -73,7 +74,8 @@ def parseFromHTML(content):
     return [noten, studiengang]
 
 
-def processList(noten, studiengang, notifier: Notifier):
+def processList(noten, studiengang, notifier: Notifier, config: Configuration):
+    stateFile = config.getDefault('stateFile')
     subject = "Neuer Pruefungsstatus fuer '" + studiengang + "'"
     message = ''
     changes = 0
@@ -83,11 +85,11 @@ def processList(noten, studiengang, notifier: Notifier):
         hash = hashlib.md5(toHash.encode("UTF-8")).hexdigest()
 
         knownHashes = []
-        if os.path.exists('examcheck.txt'):
-            knownHashes = Path('examcheck.txt').read_text()
-            f = open('examcheck.txt', 'a+')
+        if os.path.exists(stateFile):
+            knownHashes = Path(stateFile).read_text()
+            f = open(stateFile, 'a+')
         else:
-            f = open('examcheck.txt', 'w')
+            f = open(stateFile, 'w')
 
         if hash not in knownHashes:
             changes += 1

@@ -35,6 +35,10 @@ telegramChatId =
 
 # consoleOutputMode: 0 = NONE; 1 = PRETTY_CHANGES; 2 = JSON_ALL
 consoleOutputMode = 1
+
+# the state file stores hashes of exams that have already been read
+# the file path must be writable
+stateFile = examcheck.txt
 """
     config = configparser.ConfigParser(allow_no_value=True)
 
@@ -57,12 +61,12 @@ consoleOutputMode = 1
             if self.file_readable(self.configpath):
                 with open(self.configpath, 'r') as configfile:
                     if self.verbose:
-                        print('Load configuration file "%s"' % self.configpath, False)
+                        print('Lade Konfigurationsdatei "%s"' % self.configpath)
                     self.config.read_file(configfile)
             else:
                 with open(self.configpath, 'w') as configfile:
                     if self.verbose:
-                        print('Create new default configuration file "%s"' % self.configpath, False)
+                        print('Erstelle neue Standard Konfigurationsdatei "%s"' % self.configpath)
                     # self.config.write(configfile)
                     configfile.write(self.sample_config)
 
