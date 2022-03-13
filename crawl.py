@@ -17,7 +17,7 @@ config.load()
 
 if config.getDefault('icmsUsername') == '' or config.getDefault('icmsPassword') == '':
     print("Die Konfiguration von Benutzername und Passwort ist notwendig!")
-    exit(1)
+    sys.exit(1)
 
 customNotifier = Notifier(config)
 

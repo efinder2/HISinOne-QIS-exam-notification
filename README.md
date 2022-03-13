@@ -30,9 +30,11 @@ Mehr Informationen zum erstellen von Telegram Bots: [https://core.telegram.org/b
 Die Module requests und lxml sind standardmäßig nicht installiert. Diese können mit pip nachinstalliert werden:
 > pip install -r requirements.txt
 
+Alternativ kann auch das gebaute Release für Linux verwendet werden
+
 ### Script installieren
-- Lade das Script in deine Python Umgebung
-- Lass dir mit `python3 crawl.py --config myHisConfig.cfg` eine Konfigurationsdatei erstellen (der Pfad zur Datei kann geändert werden, muss aber schreibbar sin)
+- Lade das Script in deine Python Umgebung (zum Ausführen der bereits gebauten Version nicht notwendig)
+- Lass dir mit `python3 crawl.py --config myHisConfig.cfg` oder `./crawl --config myHisConfig.cfg` eine Konfigurationsdatei erstellen (der Pfad zur Datei kann geändert werden, muss aber schreibbar sin)
 - Die Konfigurationsdatei nun manuell anpassen
     - Nutzername und Passwort benötigt (iCMS Zugangsdaten)
     - gerne auch schon mit Telegram oder Mail Support (optional)
@@ -41,10 +43,19 @@ Die Module requests und lxml sind standardmäßig nicht installiert. Diese könn
 ### Automatisches ausführen
 Du kannst dein Script automatisch regelmäßig ausführen lassen (dafür ist es ja auch gedacht). Das kannst du mit einem CronJob realisieren. Erstelle einfach folgenden CronJob:
 
-> */30 * * * * /path/to/crawl.py
+> */30 * * * * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
+
+oder
+
+> */30 * * * * /path/to/crawl -c /path/to/myHisConfig.cfg
 
 Dies führt dein Script automatisch alle 30 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken kann man die Ausführung auf die prüfungsrelevanten Monate begrenzen:
-> */30 * * 1,2,6,7 * /path/to/crawl.py
+
+> */30 * * 1,2,6,7 * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
+
+oder
+
+> */30 * * 1,2,6,7 * /path/to/crawl -c /path/to/myHisConfig.cfg
 
 ## Sicherheitshinweis
 Du musst dein zentrales Passwort für deinen Hochschulaccount im **Klartext** in der Konfigurationsdatei speichern. Achte daher bitte darauf, dass das Script nur in einer gesicherten Umgebung läuft und durch geeignete Berechtigungen von dem Zugriff Dritter geschützt ist.
