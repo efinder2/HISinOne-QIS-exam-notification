@@ -76,6 +76,8 @@ def parseFromHTML(content):
 def processList(noten, studiengang, notifier: Notifier):
     subject = "Neuer Pruefungsstatus fuer '" + studiengang + "'"
     message = ''
+    changes = 0
+
     for pruefungsnr in noten:
         toHash = pruefungsnr + noten[pruefungsnr]["status"]
         hash = hashlib.md5(toHash.encode("UTF-8")).hexdigest()
@@ -88,6 +90,7 @@ def processList(noten, studiengang, notifier: Notifier):
             f = open('examcheck.txt', 'w')
 
         if hash not in knownHashes:
+            changes += 1
             f.write(hash + "\n")
 
             message += "\n\n" + \
@@ -103,4 +106,5 @@ def processList(noten, studiengang, notifier: Notifier):
     message = message.encode('ascii', 'ignore').decode('ascii')
     subject = subject.encode('ascii', 'ignore').decode('ascii')
 
-    notifier.notify(message, subject, noten)
+    if changes > 0:
+        notifier.notify(message, subject, noten)
