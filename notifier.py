@@ -30,12 +30,24 @@ class Notifier:
         if self.config.getDefault('mailSmtpHost') != '':
             context = ssl.create_default_context()
 
-            with smtplib.SMTP_SSL(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort'), context=context) as server:
-                server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
-                server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
-                                "Subject: " + subject + "\n\n" + message)
+            if self.config.getDefaultBool('mailStartTLS'):
+                with smtplib.SMTP(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort')) as server:
+                    server.starttls(context=context)
+                    self.sendMail(message, server, subject)
+                    if self.config.verbose:
+                        print("Mail wurde erfolgreich über eine StartTLS verschlüsselte Verbindung gesendet")
+            else:
+                with smtplib.SMTP_SSL(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort'), context=context) as server:
+                    self.sendMail(message, server, subject)
+                    if self.config.verbose:
+                        print("Mail wurde erfolgreich über eine SSL verschlüsselte Verbindung gesendet")
 
         if self.config.getDefault('telegramChatId') != '':
             send_text = 'https://api.telegram.org/bot' + self.config.getDefault('telegramBotToken') + '/sendMessage?chat_id=' \
                         + self.config.getDefault('telegramChatId') + '&parse_mode=Markdown&text=' + '**' + subject + '**' + message
             requests.get(send_text)
+
+    def sendMail(self, message, server, subject):
+        server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
+        server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
+                        "Subject: " + subject + "\n\n" + message)

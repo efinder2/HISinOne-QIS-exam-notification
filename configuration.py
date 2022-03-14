@@ -21,13 +21,23 @@ icmsQisposServerPart = https://qispos.hs-fulda.de
 
 # if mailSmtpHost is set the script tries to send you a email notification
 # but all following mail config fields are required for mail support
-# only ssl supported, no starttls at the moment!
+# mailStartTLS toggles between starttls and ssl connection security mode
 mailSSLPort = 465
 mailSmtpHost = 
 mailLoginUser = 
 mailLoginPassword = 
 mailSenderMail = 
 mailReceiverMail = 
+mailStartTLS = false
+
+# if you'd like to use your @hs-fulda.de address you may want to use the setting below 
+# mailSSLPort = 587
+# mailSmtpHost = smtp.hs-fulda.de
+# mailLoginUser = your fd number
+# mailLoginPassword = your icms Password
+# mailSenderMail = your hs-fulda.de address
+# mailReceiverMail = target address
+# mailStartTLS = true
 
 # if both options are set the script tries to send you a telegram notification
 telegramBotToken = 
@@ -44,7 +54,7 @@ stateFile = examcheck.txt
 
     def load(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hvc:", ["help", "verbose", "config="])
+            opts, args = getopt.getopt(sys.argv[1:], "hvsc:", ["help", "verbose", "show-default-config", "config="])
         except getopt.GetoptError:
             self.print_help()
             sys.exit(2)
@@ -56,6 +66,9 @@ stateFile = examcheck.txt
                 self.configpath = str(arg)
             elif opt in ("-v", "--verbose"):
                 self.verbose = True
+            elif opt in ("-s", "--show-default-config"):
+                print(self.sample_config)
+                sys.exit(0)
 
         if self.configpath is not None and self.configpath != "":
             if self.file_readable(self.configpath):
@@ -82,6 +95,9 @@ stateFile = examcheck.txt
         else:
             self.verbose = False
 
+    def getDefaultBool(self, key):
+        return self.getDefault(key) in (1, "1", "true", "True", True)
+
     def getDefault(self, key):
         return self.config.get('default', key)
 
@@ -92,6 +108,7 @@ stateFile = examcheck.txt
         print('Usage: python3 crawl.py')
         print('\nArguments:')
         print('-c --config <filepath>          : Path to the configuration file in the filesystem')
+        print('-s --show-default-config        : Print default configuration to the console and stop the script')
         print('-v --verbose                    : Enable status messages')
         print('-h --help                       : Print this help text')
 
