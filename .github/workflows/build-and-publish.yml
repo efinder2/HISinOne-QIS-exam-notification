@@ -29,5 +29,7 @@ jobs:
           path: ./
           dockerfile: Docker/Dockerfile
           tags: latest
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
