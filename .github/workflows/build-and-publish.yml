@@ -22,7 +22,7 @@ jobs:
           registry: ghcr.io
           username: "efinder2"
           path: ./
-          password: ${{ secrets.PAT }}
+          password: ${{ secrets.CHCR_PAT }}
           dockerfile: Docker/Dockerfile
           tags: latest
       - name: Image digest
