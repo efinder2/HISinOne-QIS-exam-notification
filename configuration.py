@@ -54,7 +54,7 @@ stateFile = examcheck.txt
 
     def load(self):
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hvc:", ["help", "verbose", "config="])
+            opts, args = getopt.getopt(sys.argv[1:], "hvsc:", ["help", "verbose", "show-default-config", "config="])
         except getopt.GetoptError:
             self.print_help()
             sys.exit(2)
@@ -66,6 +66,9 @@ stateFile = examcheck.txt
                 self.configpath = str(arg)
             elif opt in ("-v", "--verbose"):
                 self.verbose = True
+            elif opt in ("-s", "--show-default-config"):
+                print(self.sample_config)
+                sys.exit(0)
 
         if self.configpath is not None and self.configpath != "":
             if self.file_readable(self.configpath):
@@ -105,6 +108,7 @@ stateFile = examcheck.txt
         print('Usage: python3 crawl.py')
         print('\nArguments:')
         print('-c --config <filepath>          : Path to the configuration file in the filesystem')
+        print('-s --show-default-config        : Print default configuration to the console and stop the script')
         print('-v --verbose                    : Enable status messages')
         print('-h --help                       : Print this help text')
 
