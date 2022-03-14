@@ -21,13 +21,14 @@ icmsQisposServerPart = https://qispos.hs-fulda.de
 
 # if mailSmtpHost is set the script tries to send you a email notification
 # but all following mail config fields are required for mail support
+# mailStartTLS toggles between starttls and ssl connection security mode
 mailSSLPort = 465
 mailSmtpHost = 
 mailLoginUser = 
 mailLoginPassword = 
 mailSenderMail = 
 mailReceiverMail = 
-mailStarttls = False
+mailStartTLS = false
 
 # if you'd like to use your @hs-fulda.de address you may want to use the setting below 
 # mailSSLPort = 587
@@ -36,7 +37,7 @@ mailStarttls = False
 # mailLoginPassword = your icms Password
 # mailSenderMail = your hs-fulda.de address
 # mailReceiverMail = target address
-# mailStarttls = true
+# mailStartTLS = true
 
 # if both options are set the script tries to send you a telegram notification
 telegramBotToken = 
