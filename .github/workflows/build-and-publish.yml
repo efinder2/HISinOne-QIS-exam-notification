@@ -12,7 +12,7 @@ jobs:
     # run only when code is compiling and tests are passing
     runs-on: ubuntu-latest
 
-    # steps to perform in job
+    # steps to perform in the job
     steps:
       - name: "Build:checkout"
         uses: actions/checkout@v2
