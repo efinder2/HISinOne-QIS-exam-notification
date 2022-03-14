@@ -13,7 +13,7 @@ class Configuration:
     sample_config = """[default]
 verbose = false
 
-# add your QisInOne / horstl login data
+# add your HISInOne / horstl login data
 icmsUsername = 
 icmsPassword = 
 icmsServerPart = https://horstl.hs-fulda.de
