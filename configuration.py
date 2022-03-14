@@ -21,13 +21,22 @@ icmsQisposServerPart = https://qispos.hs-fulda.de
 
 # if mailSmtpHost is set the script tries to send you a email notification
 # but all following mail config fields are required for mail support
-# only ssl supported, no starttls at the moment!
 mailSSLPort = 465
 mailSmtpHost = 
 mailLoginUser = 
 mailLoginPassword = 
 mailSenderMail = 
 mailReceiverMail = 
+mailStarttls = False
+
+# if you'd like to use your @hs-fulda.de address you may want to use the setting below 
+# mailSSLPort = 587
+# mailSmtpHost = smtp.hs-fulda.de
+# mailLoginUser = your fd number
+# mailLoginPassword = your icms Password
+# mailSenderMail = your hs-fulda.de address
+# mailReceiverMail = target address
+# mailStarttls = true
 
 # if both options are set the script tries to send you a telegram notification
 telegramBotToken = 
@@ -81,6 +90,9 @@ stateFile = examcheck.txt
             self.verbose = True
         else:
             self.verbose = False
+
+    def getDefaultBool(self, key):
+        return self.getDefault(key) in (1, "1", "true", "True", True)
 
     def getDefault(self, key):
         return self.config.get('default', key)

@@ -30,10 +30,18 @@ class Notifier:
         if self.config.getDefault('mailSmtpHost') != '':
             context = ssl.create_default_context()
 
-            with smtplib.SMTP_SSL(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort'), context=context) as server:
-                server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
-                server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
-                                "Subject: " + subject + "\n\n" + message)
+            if self.config.getDefaultBool('mailStarttls'):
+                with smtplib.SMTP(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort')) as server:
+                    server.starttls()
+                    server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
+                    server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
+                                    "Subject: " + subject + "\n\n" + message)
+                    print("mail successfully sent with starttls")
+            else:
+                with smtplib.SMTP_SSL(self.config.getDefault('mailSmtpHost'), self.config.getDefault('mailSSLPort'), context=context) as server:
+                    server.login(self.config.getDefault('mailLoginUser'), self.config.getDefault('mailLoginPassword'))
+                    server.sendmail(self.config.getDefault('mailSenderMail'), self.config.getDefault('mailReceiverMail'),
+                                    "Subject: " + subject + "\n\n" + message)
 
         if self.config.getDefault('telegramChatId') != '':
             send_text = 'https://api.telegram.org/bot' + self.config.getDefault('telegramBotToken') + '/sendMessage?chat_id=' \
