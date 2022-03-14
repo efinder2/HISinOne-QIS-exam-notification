@@ -16,13 +16,16 @@ jobs:
     steps:
       - name: "Build:checkout"
         uses: actions/checkout@v2
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CHCR_PAT }}
       - name: 'Build:dockerimage'
         uses: docker/build-push-action@v1
         with:
           registry: ghcr.io
-          username: "efinder2"
           path: ./
-          password: ${{ secrets.CHCR_PAT }}
           dockerfile: Docker/Dockerfile
           tags: latest
       - name: Image digest
