@@ -69,3 +69,10 @@ Das Resultat liegt danach im Pfad `dist/crawl`.
 
 Optional kann die Installation der Abhängigkeiten und Bauen der ausführbaren Datei durch Aufruf von `linux_build_env/package.sh` angestoßen werden.
 Beachte, dass dabei die Abhängigkeiten direkt durch deinen Benutzer in deinem System installiert werden. Python muss bereits vorhanden sein
+
+## Starten mit Docker
+Die Anwendung steht auch als docker container zur Verfügung. Dieserkann über die Kommandozeile installiert werden.
+> $ docker pull ghcr.io/efinder2/hisinone-qis-exam-notification:latest
+
+Der Container führt den Job jede Stunde aus. Für die Konfiguration wird das Volumen `/data` benötigt. Hierin wird die Konfigurationsdatei `myHisConfig.cfg` abgelegt. Diese kann wie oben beschrieben angepasst werden.
+Es ist empfehlenswert den Container zusammen mit dem watchtower image auszuführen, sodass man immer den aktuellen Stand hat. Dis ist sinnvoll, da das Programm für Änderungen am iCMS (horstl) angepasst werden kann.
