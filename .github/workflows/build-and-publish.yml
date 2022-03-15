@@ -33,7 +33,7 @@ jobs:
             efinder2/his_in_one_qis_exam_notification
             ghcr.io/efinder2/his_in_one_qis_exam_notification
           # generate Docker tags based on the following events/attributes
-          tags:  ${{ github.event.inputs.environment }}
+          tags:  ${{ github.event.inputs.tag }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: 'Build:dockerimage'
@@ -70,8 +70,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.environment }}
-          release_name: Release ${{ github.event.inputs.environment }}
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
