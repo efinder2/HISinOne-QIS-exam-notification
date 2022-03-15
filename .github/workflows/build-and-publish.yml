@@ -61,11 +61,10 @@ jobs:
     steps:
       - name: "Build:checkout"
         uses: actions/checkout@v2
-      steps:
-      - name: Run runtime build script
-        run: linux_build_env/build.sh
-      - name: Run runtime build script
-          run: linux_build_env/package.sh
+      - name: Create Docker container and Build
+        run: |
+          chmod +x ./linux_build_env/build.sh
+          ./linux_build_env/build.sh
       - name: Set up Python 3.10
         uses: actions/setup-python@v1
         with:
@@ -73,4 +72,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: crawl
-          path: build/crawl
+          path: dist/crawl
