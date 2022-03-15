@@ -6,7 +6,7 @@ VOLUME ["/data"]
 
 RUN mkdir /workingdir
 
-RUN apt-get update && apt-get -y install cron
+RUN apt-get update
 
 COPY configuration.py /workingdir/
 COPY crawl.py /workingdir/
