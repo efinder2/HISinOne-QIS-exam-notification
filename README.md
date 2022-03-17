@@ -42,22 +42,27 @@ Alternativ kann auch das gebaute Release für Linux verwendet werden
 - Wenn du das Script jetzt erneut ausführst, solltest du einmalig über **alle** eingetragenen Prüfungen benachrichtigt werden.
 
 ### Automatisches ausführen
-Du kannst dein Script automatisch regelmäßig ausführen lassen (dafür ist es ja auch gedacht). Das kannst du mit einem CronJob realisieren. Erstelle einfach folgenden CronJob:
+Du kannst dein Script automatisch regelmäßig ausführen lassen (dafür ist es ja auch gedacht). Das kannst du mit einem CronJob realisieren. Erstelle einfach folgenden CronJob und ersetze das Fragezeichen (?) durch eine beliebige Anzahl an Stunden, nach welchen das Script wiederholt ausgeführt werden soll:
 
-> */30 * * * * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
-
-oder
-
-> */30 * * * * /path/to/crawl -c /path/to/myHisConfig.cfg
-
-Dies führt dein Script automatisch alle 30 Minuten aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken, kann man die Ausführung auf die prüfungsrelevanten Monate begrenzen:
-
-> */30 * * 1,2,6,7 * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
+> 0 */? * * * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
 
 oder
 
-> */30 * * 1,2,6,7 * /path/to/crawl -c /path/to/myHisConfig.cfg
+> 30 */? * * * /path/to/crawl -c /path/to/myHisConfig.cfg
 
+Dies führt dein Script automatisch alle ? Stunden zur Minute 30 aus. Den Wert kannst du anpassen, aber denk dabei bitte an die armen, armen Hochschulserver! Um das ganze noch mehr einzuschränken, kann man die Ausführung auf die prüfungsrelevanten Monate begrenzen:
+
+> 0 */? * 1,2,6,7 * python3 /path/to/crawl.py -c /path/to/myHisConfig.cfg
+
+oder
+
+> 30 */? * 1,2,6,7 * /path/to/crawl -c /path/to/myHisConfig.cfg
+
+Um eine gute Performance der Abfragen zu erreichen, die Hochschulserver zu schonen und keine ungewollte DDoS Attacke zu starten, lohnt es sich die Cronjobs anzupassen und eine eigene Minuten/Stundenzahl zu wählen. Wenn es dir reicht, kannst du das Script ja auch nur 1x am Tag zu einem beliebigen Zeitpunkt ausführen lassen.
+
+Optional kannst du dir ja auch ein Desktop Icon erstellen und das Script manuell ausführen, falls du dir nur den manuellen horstl Login sparen möchtest.
+
+Informationen dazu, wie Cronjobs richtig konfiguriert werden können, gibt es z.B. hier: https://www.stetic.com/developer/cronjob-linux-tutorial-und-crontab-syntax/
 ## Sicherheitshinweis
 Du musst dein zentrales Passwort für deinen Hochschulaccount im **Klartext** in der Konfigurationsdatei speichern. Achte daher bitte darauf, dass das Script nur in einer gesicherten Umgebung läuft und durch geeignete Berechtigungen von dem Zugriff Dritter geschützt ist.
 
