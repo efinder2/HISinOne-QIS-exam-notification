@@ -74,3 +74,34 @@ Das Resultat liegt danach im Pfad `dist/crawl`.
 
 Optional kann die Installation der Abhängigkeiten und Bauen der ausführbaren Datei durch Aufruf von `linux_build_env/package.sh` angestoßen werden.
 Beachte, dass dabei die Abhängigkeiten direkt durch deinen Benutzer in deinem System installiert werden. Python muss bereits vorhanden sein
+
+## Starten mit Docker
+### Eigenen Container bauen (optional)
+`docker build -t his-in-one_qis_exam-notification .`
+
+### Container nutzen
+Die Anwendung steht auch als Docker Container zur Verfügung. Dieser wird von DockerHub heruntergeladen und kann z.B. über die Kommandozeile genutzt werden.
+
+Der Standardpfad `/home/$USER/HISinOne-docker-config` zum Speichern der Konfiguration auf dem Host kann natürlich geändert werden.
+
+```bash
+# Erstelle einen Ordner für die Konfiguration des Scripts im Docker Container
+mkdir /home/$USER/HISinOne-docker-config
+
+# Lasse die Beispielkonfiguration automatisch in dem Ordner erstellen, falls noch nicht vorhanden
+docker run --rm -v /home/$USER/HISinOne-docker-config:/data binsky/his-in-one_qis_exam-notification:latest
+
+# Starte den Container im Hintergrund für regelmäßige Checks
+docker run --rm -d -v /home/$USER/HISinOne-docker-config:/data --name my_his-in-one_exam-notifications binsky/his-in-one_qis_exam-notification:latest
+```
+
+Nach dem ersten Ausführen des Containers werden im Ordner `/home/$USER/HISinOne-docker-config` die Dateien `crontab` und `myHisConfig.cfg` hinterlegt.
+
+Der Container führt das Script für die Prüfungsleistungen im Standard alle 2 Stunden zu einer zufälligen (festgelegten) Minute aus.
+Das Intervall ist in der Datei `/home/$USER/HISinOne-docker-config/crontab` festgelegt.
+
+Die Konfigurationsdatei `/home/$USER/HISinOne-docker-config/myHisConfig.cfg` sollte vor dem Start des Containers im Hintergrund (mit -d) wie oben beschrieben angepasst und getestet werden.
+Dafür kann der Befehl `docker run --rm -v /home/$USER/HISinOne-docker-config:/data binsky/his-in-one_qis_exam-notification:latest` verwendet und mit STRG-C abgebrochen werden.
+
+Es ist empfehlenswert den Container zusammen mit dem `watchtower` Image auszuführen, sodass man so immer den aktuellen Stand hat und das Image des Containers automatisch aktualisiert wird.
+Sollte das Script im Zuge von Veränderungen am iCMS (horstl) angepasst werden müssen, kann die Aktualisierung so automatisch geladen werden.
