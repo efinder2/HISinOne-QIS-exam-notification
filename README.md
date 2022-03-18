@@ -76,9 +76,32 @@ Optional kann die Installation der Abhängigkeiten und Bauen der ausführbaren D
 Beachte, dass dabei die Abhängigkeiten direkt durch deinen Benutzer in deinem System installiert werden. Python muss bereits vorhanden sein
 
 ## Starten mit Docker
-Die Anwendung steht auch als docker container zur Verfügung. Dieser kann über die Kommandozeile installiert werden. Hierzu ist ein Login zur github
+### Eigenen Container bauen (optional)
+`docker build -t HISinOne-QIS-exam-notification .`
 
-> docker pull /efinder2/hisinone-qis-exam-notification:latest
+### Container nutzen
+Die Anwendung steht auch als Docker Container zur Verfügung. Dieser wird von DockerHub heruntergeladen und kann z.B. über die Kommandozeile genutzt werden.
 
-Der Container führt den Job jede Stunde aus. Für die Konfiguration wird das Volumen `/data` benötigt. Hierin wird die Konfigurationsdatei `myHisConfig.cfg` abgelegt. Diese kann wie oben beschrieben angepasst werden.
-Es ist empfehlenswert den Container zusammen mit dem watchtower image auszuführen, sodass man immer den aktuellen Stand hat. Dis ist sinnvoll, da das Programm für Änderungen am iCMS (horstl) angepasst werden kann.
+Der Standardpfad `/home/$USER/HISinOne-docker-config` zum Speichern der Konfiguration auf dem Host kann natürlich geändert werden.
+
+```bash
+# Erstelle einen Ordner für die Konfiguration des Scripts im Docker Container
+mkdir /home/$USER/HISinOne-docker-config
+
+# Lasse die Beispielkonfiguration automatisch in dem Ordner erstellen, falls noch nicht vorhanden
+docker run --rm -v /home/$USER/HISinOne-docker-config:/data HISinOne-QIS-exam-notification:latest
+
+# Starte den Container im Hintergrund für regelmäßige Checks
+docker run --rm -d -v /home/$USER/HISinOne-docker-config:/data --name hisinone-qis-exam-notification HISinOne-QIS-exam-notification:latest
+```
+
+Nach dem ersten Ausführen des Containers werden im Ordner `/home/$USER/HISinOne-docker-config` die Dateien `crontab` und `myHisConfig.cfg` hinterlegt.
+
+Der Container führt das Script für die Prüfungsleistungen im Standard alle 2 Stunden zu einer zufälligen (festgelegten) Minute aus.
+Das Intervall ist in der Datei `/home/$USER/HISinOne-docker-config/crontab` festgelegt.
+
+Die Konfigurationsdatei `/home/$USER/HISinOne-docker-config/myHisConfig.cfg` sollte vor dem Start des Containers im Hintergrund (mit -d) wie oben beschrieben angepasst und getestet werden.
+Dafür kann der Befehl `docker run --rm -v /home/$USER/HISinOne-docker-config:/data HISinOne-QIS-exam-notification:latest` verwendet und mit STRG-C abgebrochen werden.
+
+Es ist empfehlenswert den Container zusammen mit dem `watchtower` Image auszuführen, sodass man so immer den aktuellen Stand hat und das Image des Containers automatisch aktualisiert wird.
+Sollte das Script im Zuge von Veränderungen am iCMS (horstl) angepasst werden müssen, kann die Aktualisierung so automatisch geladen werden.
