@@ -1,15 +1,37 @@
 #!/bin/bash
-if ! python3 /workingdir/crawl.py --config /data/myHisConfig.cfg; then
-    exit 1
+
+# SIGTERM-handler
+term_handler() {
+  service cron stop
+  exit 0
+}
+
+
+if [ ! -f /data/crontab ]; then
+  randomMinute=$(( ( RANDOM % 60 ) + 1 ))
+  echo -e "$randomMinute */2 * * * python3 /workingdir/crawl.py -c /data/myHisConfig.cfg\n" > /data/crontab
+  chmod 777 /data/crontab
+else
+  crontab /data/crontab
 fi
 
-while python3 /workingdir/crawl.py --config /data/myHisConfig.cfg; do
-  var=$((60 * 60 * 1000));
-  sleep $var
+if [ ! -f /data/myHisConfig.cfg ]; then
+  python3 /workingdir/crawl.py -c /data/myHisConfig.cfg
+  chmod 777 /data/myHisConfig.cfg
+  echo "Konfigurationsdatei in /data/myHisConfig.cfg wurde erstellt"
+  exit 0
+else
+  python3 /workingdir/crawl.py -c /data/myHisConfig.cfg
+fi
 
-  current_date_time="$(date +%Y%m%d%H%M%S)";
-  echo "$current_date_time";
+service cron start
+
+
+trap 'kill ${!}; term_handler' INT
+trap 'kill ${!}; term_handler' SIGTERM
+
+# wait forever
+while true
+do
+    tail -f /dev/null & wait ${!}
 done
-
-echo "crawl missed"
-exit 1

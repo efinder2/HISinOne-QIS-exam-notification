@@ -1,26 +1,14 @@
-# About my dockerfile
-# directive=value
 FROM python:latest
-RUN mkdir /data
-VOLUME ["/data"]
 
-RUN mkdir /workingdir
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-
-COPY configuration.py /workingdir/
-COPY crawl.py /workingdir/
-COPY notenliste.py /workingdir/
-COPY notifier.py /workingdir/
+RUN apt-get update && apt-get install -y cron
+RUN mkdir /workingdir /data
 COPY requirements.txt /workingdir/
-COPY test.py /workingdir/
-COPY Docker/run.sh /workingdir/
+COPY *.py /workingdir/
+RUN pip install --no-input -r /workingdir/requirements.txt
 
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
-
-
-RUN pip install -r /workingdir/requirements.txt
-
-ENTRYPOINT ["/workingdir/run.sh"]
-
-
+ENTRYPOINT ["/entrypoint.sh"]
