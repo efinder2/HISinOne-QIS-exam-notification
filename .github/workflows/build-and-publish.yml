@@ -42,7 +42,7 @@ jobs:
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          path: ./
+          context: .
           dockerfile: Dockerfile
           tags: latest
           push: true
